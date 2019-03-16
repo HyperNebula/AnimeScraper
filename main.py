@@ -1,40 +1,58 @@
+import csv
 import requests
 from bs4 import BeautifulSoup
 
-url = "https://myanimelist.net/anime.php?q=samuri%20champloo"
+f = open("anime.csv", "w+")
+f.write("name, eng_name, description, score, rating, duration, episode_num, genres, status, premiere_date, image_url\n")
+f.close()
 
-page = requests.get(url)
-soup = BeautifulSoup(page.text, 'html.parser')
+animes = ["Samurai Champloo", "Sword Art Online"]
 
-result = soup.find(class_='hoverinfo_trigger fw-b fl-l')
-result_link = result['href']
+for item in animes:
 
-# new page
-url = result_link
+    item_url = item.replace(" ", "%20")
 
-page = requests.get(url)
-soup = BeautifulSoup(page.text, 'html.parser')
+    url = "https://myanimelist.net/anime.php?q=" + item_url
 
-name = soup.find("span", itemprop="name").text
-image_url = soup.find("img", itemprop="image")['src']
-description = soup.find("span", itemprop="description").text
-score = soup.find("span", itemprop="ratingValue").text
-# episode_num = soup.find("span", id="curEps").text
+    page = requests.get(url)
+    soup = BeautifulSoup(page.text, 'html.parser')
 
-raw_info = soup.find("div", class_="js-scrollfix-bottom")
-for item in raw_info:
-    if "Rating:" in str(item):
-        rating = item.text.replace("Rating:\n", "").strip()
-    elif "English:" in str(item):
-        eng_name = item.text.replace("English: ", "").strip()
-    elif "Duration:" in str(item):
-        duration = item.text.replace("Duration:\n", "").strip()
-    elif "Genres:" in str(item):
-        genres = item.text.replace("Genres:\n", "").strip()
-    elif "Status:" in str(item):
-        status = item.text.replace("Status:\n", "").strip()
-    elif "Episodes:" in str(item):
-        episode_num = item.text.replace("Episodes:\n", "").strip()
-    elif "Premiered:" in str(item):
-        premiere_date = item.text.replace("Premiered:\n", "").strip()
+    result = soup.find(class_='hoverinfo_trigger fw-b fl-l')
+    result_link = result['href']
+
+    # new page
+    url = result_link
+
+    page = requests.get(url)
+    soup = BeautifulSoup(page.text, 'html.parser')
+
+    name = soup.find("span", itemprop="name").text
+    image_url = soup.find("img", itemprop="image")['src']
+    description = repr(soup.find("span", itemprop="description").text)
+    score = soup.find("span", itemprop="ratingValue").text
+    # episode_num = soup.find("span", id="curEps").text
+
+    raw_info = soup.find("div", class_="js-scrollfix-bottom")
+    for item in raw_info:
+        if "Rating:" in str(item):
+            rating = item.text.replace("Rating:\n", "").strip()
+        elif "English:" in str(item):
+            eng_name = item.text.replace("English: ", "").strip()
+        elif "Duration:" in str(item):
+            duration = item.text.replace("Duration:\n", "").strip()
+        elif "Genres:" in str(item):
+            genres = item.text.replace("Genres:\n", "").strip()
+        elif "Status:" in str(item):
+            status = item.text.replace("Status:\n", "").strip()
+        elif "Episodes:" in str(item):
+            episode_num = item.text.replace("Episodes:\n", "").strip()
+        elif "Premiered:" in str(item):
+            premiere_date = item.text.replace("Premiered:\n", "").strip()
+
+    anime_info = [name, eng_name, description, score, rating, duration, episode_num, genres, status, premiere_date, image_url]
+
+    with open('anime.csv', 'a', newline='') as fd:
+        wr = csv.writer(fd)
+        wr.writerow(anime_info)
+
 
