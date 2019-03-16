@@ -18,15 +18,23 @@ soup = BeautifulSoup(page.text, 'html.parser')
 name = soup.find("span", itemprop="name").text
 image_url = soup.find("img", itemprop="image")['src']
 description = soup.find("span", itemprop="description").text
-score = soup.find("div", class_="fl-l score").text.strip()
-episode_num = soup.find("span", id="curEps").text
+score = soup.find("span", itemprop="ratingValue").text
+# episode_num = soup.find("span", id="curEps").text
 
-raw_info = soup.find_all("div", class_="spaceit_pad")
-name_info = []
-eng_name = ""
+raw_info = soup.find("div", class_="js-scrollfix-bottom")
 for item in raw_info:
-    if "dark_text" in str(item):
-        if "English:" in str(item.text):
-            eng_name = item.text.strip().replace("English: ", "")
-        name_info.append(item.text.strip())
+    if "Rating:" in str(item):
+        rating = item.text.replace("Rating:\n", "").strip()
+    elif "English:" in str(item):
+        eng_name = item.text.replace("English: ", "").strip()
+    elif "Duration:" in str(item):
+        duration = item.text.replace("Duration:\n", "").strip()
+    elif "Genres:" in str(item):
+        genres = item.text.replace("Genres:\n", "").strip()
+    elif "Status:" in str(item):
+        status = item.text.replace("Status:\n", "").strip()
+    elif "Episodes:" in str(item):
+        episode_num = item.text.replace("Episodes:\n", "").strip()
+    elif "Premiered:" in str(item):
+        premiere_date = item.text.replace("Premiered:\n", "").strip()
 
