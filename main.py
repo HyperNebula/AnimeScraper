@@ -8,9 +8,9 @@ f.close()
 
 animes = ["Samurai Champloo", "Sword Art Online"]
 
-for item in animes:
+for show in animes:
 
-    item_url = item.replace(" ", "%20")
+    item_url = show.replace(" ", "%20")
 
     url = "https://myanimelist.net/anime.php?q=" + item_url
 
@@ -20,34 +20,23 @@ for item in animes:
     result = soup.find(class_='hoverinfo_trigger fw-b fl-l')
     result_link = result['href']
 
-    # new page
     url = result_link
 
     page = requests.get(url)
     soup = BeautifulSoup(page.text, 'html.parser')
 
-    name = soup.find("span", itemprop="name").text
-    image_url = soup.find("img", itemprop="image")['src']
-    description = repr(soup.find("span", itemprop="description").text)
-    score = soup.find("span", itemprop="ratingValue").text
-    # episode_num = soup.find("span", id="curEps").text
+    name = soup.find("span", itemprop="name")
+    image_url = soup.find("img", itemprop="image")
+    description = repr(soup.find("span", itemprop="description"))
+    score = soup.find("span", itemprop="ratingValue")
 
-    raw_info = soup.find("div", class_="js-scrollfix-bottom")
-    for item in raw_info:
-        if "Rating:" in str(item):
-            rating = item.text.replace("Rating:\n", "").strip()
-        elif "English:" in str(item):
-            eng_name = item.text.replace("English: ", "").strip()
-        elif "Duration:" in str(item):
-            duration = item.text.replace("Duration:\n", "").strip()
-        elif "Genres:" in str(item):
-            genres = item.text.replace("Genres:\n", "").strip()
-        elif "Status:" in str(item):
-            status = item.text.replace("Status:\n", "").strip()
-        elif "Episodes:" in str(item):
-            episode_num = item.text.replace("Episodes:\n", "").strip()
-        elif "Premiered:" in str(item):
-            premiere_date = item.text.replace("Premiered:\n", "").strip()
+    rating = str(soup.find(text="Rating:").parent.parent).replace("Rating:", "")
+    eng_name = str(soup.find(text="English:").parent.parent).replace("English:", "")
+    duration = str(soup.find(text="Duration:").parent.parent).replace("Duration:", "")
+    genres = str(soup.find(text="Genres:").parent.parent).replace("Genres:", "")
+    status = str(soup.find(text="Status:").parent.parent).replace("Status:", "")
+    episode_num = str(soup.find(text="Episodes:").parent.parent).replace("Episodes:", "")
+    premiere_date = str(soup.find(text="Premiered:").parent.parent).replace("Premiered:", "")
 
     anime_info = [name, eng_name, description, score, rating, duration, episode_num, genres, status, premiere_date, image_url]
 
