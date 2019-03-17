@@ -1,9 +1,23 @@
-import csv
 import requests
 from bs4 import BeautifulSoup
 
-f = open("anime.csv", "w+")
-f.write("name, eng_name, description, score, rating, duration, episode_num, genres, status, premiere_date, image_url\n")
+f = open("main.html", "w+")
+html_str = """<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <title>Anime Info</title>
+
+    </head>
+
+    <body>
+    
+        <center>
+
+            <h1>Anime Info</h1>
+"""
+f.write(html_str)
 f.close()
 
 animes = ["Samurai Champloo", "Sword Art Online"]
@@ -25,10 +39,10 @@ for show in animes:
     page = requests.get(url)
     soup = BeautifulSoup(page.text, 'html.parser')
 
-    name = soup.find("span", itemprop="name")
-    image_url = soup.find("img", itemprop="image")
-    description = repr(soup.find("span", itemprop="description"))
-    score = soup.find("span", itemprop="ratingValue")
+    name = str(soup.find("span", itemprop="name"))
+    image_url = str(soup.find("img", itemprop="image"))
+    description = str(repr(soup.find("span", itemprop="description")))
+    score = str(soup.find("span", itemprop="ratingValue"))
 
     rating = str(soup.find(text="Rating:").parent.parent).replace("Rating:", "")
     eng_name = str(soup.find(text="English:").parent.parent).replace("English:", "")
@@ -40,8 +54,22 @@ for show in animes:
 
     anime_info = [name, eng_name, description, score, rating, duration, episode_num, genres, status, premiere_date, image_url]
 
-    with open('anime.csv', 'a', newline='') as fd:
-        wr = csv.writer(fd)
-        wr.writerow(anime_info)
+    with open('main.html', 'a') as fd:
+        fd.write(image_url)
+        fd.write(name)
+        fd.write(eng_name)
+        fd.write(description)
+        fd.write(rating)
+        fd.write(score)
 
 
+f = open("main.html", "a")
+html_str = """
+        </center>
+        
+    </body>
+
+</html>
+"""
+f.write(html_str)
+f.close()
