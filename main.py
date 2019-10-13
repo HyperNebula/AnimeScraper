@@ -33,7 +33,16 @@ html_str = """<!DOCTYPE html>
 f.write(html_str)
 f.close()
 
-animes = ["Samurai Champloo", "Toradora"]
+print("Please type each anime title on a new line and say \"Done\" when you are finished")
+animes = []
+while True:
+    answer = input(" ")
+    if answer == "Done":
+        break
+    else:
+        animes.append(answer)
+
+# animes = ["Samurai Champloo", "Toradora"]
 
 for show in animes:
 
